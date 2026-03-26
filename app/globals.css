@@ -2,6 +2,7 @@
   padding: 0;
   margin: 0;
 }
+
 body {
   background-color: cadetblue;
 }
@@ -14,12 +15,13 @@ body {
   align-items: center;
   justify-content: center;
 }
+
 .cadastro {
   margin: 20px;
   display: flex;
   flex-direction: column;
-  width: 600px;
-  height: 400px;
+  width: 40dvw;
+  height: 40dvh;
   justify-content: center;
   align-items: center;
   border: 1px solid black;
@@ -37,6 +39,7 @@ body {
   margin-top: 10px;
   border: none;
 }
+
 .cadastro > div > input:hover {
   cursor: pointer;
 }
@@ -102,9 +105,36 @@ div > p {
 ::-webkit-scrollbar-track {
   background-color: #f4f4f4;
 }
+
 ::-webkit-scrollbar {
   width: 10px;
 }
+
 ::-webkit-scrollbar-thumb {
   background: #439e9a;
+}
+
+@media (max-width: 1300px) {
+  .cadastro > div > input {
+    width: 200px;
+    height: 30px;
+    font-size: 15px;
+  }
+
+  .cadastro > div > button {
+    width: 80px;
+    height: 30px;
+    font-size: 10px;
+  }
+
+  .jogos > ul > li {
+    font-size: 15px;
+    margin: 10px;
+    width: 350px;
+  }
+
+  .jogos > ul > li > button {
+    width: 50px;
+    font-size: 10px;
+  }
 }
