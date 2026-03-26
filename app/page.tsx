@@ -9,19 +9,45 @@ export default function Home() {
   const [editandoId, setEditandoId] = useState<number | null>(null);
   const [novoNome, setNovoNome] = useState("");
   const [novaCategoria, setNovaCategoria] = useState("");
+  const [sugestoes, setSugestoes] = useState<any[]>([]);
+  const [mostrarSugestoes, setMostrarSugestoes] = useState(false);
+  const [sugestoesEdit, setSugestoesEdit] = useState<any[]>([]);
+  const [mostrarSugestoesEdit, setMostrarSugestoesEdit] = useState(false);
+  const [timeoutBusca, setTimeoutBusca] = useState<NodeJS.Timeout | null>(null);
+
+  const API_KEY = "90b96356913142f1b3f4e5acd9a9049d";
+  const BASE_URL = "https://0r6an9zpbk.execute-api.us-east-2.amazonaws.com";
+
+  const buscarJogosRAWG = async (query: string) => {
+    if (!query || query.length < 2) return [];
+
+    try {
+      const res = await fetch(
+        `https://api.rawg.io/api/games?key=${API_KEY}&search=${query}&page_size=5`,
+      );
+
+      const data = await res.json();
+      return data.results || [];
+    } catch (error) {
+      console.error("Erro RAWG:", error);
+      return [];
+    }
+  };
 
   const handleGetJogos = async () => {
     try {
-      const res = await fetch("http://localhost:3000/jogos");
+      const res = await fetch(`${BASE_URL}/jogos`);
       const data = await res.json();
-      setJogos(data);
+
+      setJogos(data.data);
     } catch (error) {
       alert("Erro ao buscar jogos: " + error);
     }
   };
+
   const handleDelete = async (id: number) => {
     try {
-      const res = await fetch(`http://localhost:3000/jogos/${id}`, {
+      const res = await fetch(`${BASE_URL}/jogos/${id}`, {
         method: "DELETE",
       });
 
@@ -50,7 +76,7 @@ export default function Home() {
 
   const handleUpdate = async (id: number) => {
     try {
-      const res = await fetch(`http://localhost:3000/jogos/${id}`, {
+      const res = await fetch(`${BASE_URL}/jogos/${id}`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -80,7 +106,7 @@ export default function Home() {
 
   const handleSubmit = async () => {
     try {
-      await fetch("http://localhost:3000/jogos", {
+      await fetch(`${BASE_URL}/jogos`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -107,16 +133,54 @@ export default function Home() {
           <input
             type="text"
             placeholder="nome"
-            onChange={(e) => setNomeJogo(e.target.value)}
             value={nomeJogo}
-          />
+            onChange={(e) => {
+              const value = e.target.value;
+              setNomeJogo(value);
 
-          <input
-            type="text"
-            placeholder="categoria"
-            onChange={(e) => setCategoriaJogo(e.target.value)}
-            value={categoriaJogo}
+              if (timeoutBusca) clearTimeout(timeoutBusca);
+
+              const timeout = setTimeout(async () => {
+                const resultados = await buscarJogosRAWG(value);
+                setSugestoes(resultados);
+                setMostrarSugestoes(true);
+              }, 400);
+
+              setTimeoutBusca(timeout);
+            }}
+            onBlur={() => setTimeout(() => setMostrarSugestoes(false), 200)}
           />
+          {mostrarSugestoes && sugestoes.length > 0 && (
+            <ul style={{ background: "#fff", color: "#000" }}>
+              {sugestoes.map((game) => (
+                <li
+                  key={game.id}
+                  style={{
+                    cursor: "pointer",
+                    display: "flex",
+                    alignItems: "center",
+                    gap: "10px",
+                    padding: "5px",
+                  }}
+                  onClick={() => {
+                    setNomeJogo(game.name);
+                    setCategoriaJogo(game.genres[0]?.name || "Outros");
+                    setMostrarSugestoes(false);
+                  }}
+                  onBlur={() =>
+                    setTimeout(() => setMostrarSugestoes(false), 200)
+                  }
+                >
+                  <img
+                    src={game.background_image}
+                    width="50"
+                    style={{ borderRadius: "5px" }}
+                  />
+                  {game.name}
+                </li>
+              ))}
+            </ul>
+          )}
 
           <br />
           <button type="submit" onClick={handleSubmit}>
@@ -135,13 +199,39 @@ export default function Home() {
                     <>
                       <input
                         value={novoNome}
-                        onChange={(e) => setNovoNome(e.target.value)}
-                      />
+                        onChange={(e) => {
+                          const value = e.target.value;
+                          setNovoNome(value);
 
-                      <input
-                        value={novaCategoria}
-                        onChange={(e) => setNovaCategoria(e.target.value)}
+                          if (timeoutBusca) clearTimeout(timeoutBusca);
+
+                          const timeout = setTimeout(async () => {
+                            const resultados = await buscarJogosRAWG(value);
+                            setSugestoesEdit(resultados);
+                            setMostrarSugestoesEdit(true);
+                          }, 400);
+
+                          setTimeoutBusca(timeout);
+                        }}
                       />
+                      {mostrarSugestoesEdit && sugestoesEdit.length > 0 && (
+                        <ul style={{ background: "#fff", color: "#000" }}>
+                          {sugestoesEdit.map((game) => (
+                            <li
+                              key={game.id}
+                              onClick={() => {
+                                setNovoNome(game.name);
+                                setNovaCategoria(
+                                  game.genres[0]?.name || "Outros",
+                                );
+                                setMostrarSugestoesEdit(false);
+                              }}
+                            >
+                              {game.name}
+                            </li>
+                          ))}
+                        </ul>
+                      )}
 
                       <button onClick={() => handleUpdate(jogo.id)}>
                         Salvar
