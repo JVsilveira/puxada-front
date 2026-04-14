@@ -130,6 +130,7 @@ export default function Home() {
           <p>cadastrar novo jogo:</p>
 
           <br />
+
           <input
             type="text"
             placeholder="nome"
@@ -150,42 +151,43 @@ export default function Home() {
             }}
             onBlur={() => setTimeout(() => setMostrarSugestoes(false), 200)}
           />
-          {mostrarSugestoes && sugestoes.length > 0 && (
-            <ul style={{ background: "#fff", color: "#000" }}>
-              {sugestoes.map((game) => (
-                <li
-                  key={game.id}
-                  style={{
-                    cursor: "pointer",
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "10px",
-                    padding: "5px",
-                  }}
-                  onClick={() => {
-                    setNomeJogo(game.name);
-                    setCategoriaJogo(game.genres[0]?.name || "Outros");
-                    setMostrarSugestoes(false);
-                  }}
-                  onBlur={() =>
-                    setTimeout(() => setMostrarSugestoes(false), 200)
-                  }
-                >
-                  <img
-                    src={game.background_image}
-                    width="50"
-                    style={{ borderRadius: "5px" }}
-                  />
-                  {game.name}
-                </li>
-              ))}
-            </ul>
-          )}
-
-          <br />
           <button type="submit" onClick={handleSubmit}>
             Cadastrar Jogo
           </button>
+          <div>
+            {mostrarSugestoes && sugestoes.length > 0 && (
+              <ul>
+                {sugestoes.map((game) => (
+                  <li
+                    key={game.id}
+                    style={{
+                      cursor: "pointer",
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "10px",
+                      padding: "5px",
+                    }}
+                    onClick={() => {
+                      setNomeJogo(game.name);
+                      setCategoriaJogo(game.genres[0]?.name || "Outros");
+                      setMostrarSugestoes(false);
+                    }}
+                    onBlur={() =>
+                      setTimeout(() => setMostrarSugestoes(false), 200)
+                    }
+                  >
+                    <img
+                      src={game.background_image}
+                      width="50"
+                      style={{ borderRadius: "5px" }}
+                    />
+                    {game.name}
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+          <br />
         </div>
       </div>
       <div className="jogosCadastrados">
@@ -233,20 +235,33 @@ export default function Home() {
                         </ul>
                       )}
 
-                      <button onClick={() => handleUpdate(jogo.id)}>
+                      <button
+                        className="btn-save"
+                        onClick={() => handleUpdate(jogo.id)}
+                      >
                         Salvar
                       </button>
                     </>
                   ) : (
-                    <>
-                      {jogo.nome} - {jogo.categoria}
-                      <button onClick={() => handleDelete(jogo.id)}>
-                        Excluir
-                      </button>
-                      <button onClick={() => iniciarEdicao(jogo)}>
-                        Atualizar
-                      </button>
-                    </>
+                    <div>
+                      <div>
+                        {jogo.nome} - {jogo.categoria}
+                      </div>
+                      <div>
+                        <button
+                          className="btn-delete"
+                          onClick={() => handleDelete(jogo.id)}
+                        >
+                          Excluir
+                        </button>
+                        <button
+                          className="btn-update"
+                          onClick={() => iniciarEdicao(jogo)}
+                        >
+                          Atualizar
+                        </button>
+                      </div>
+                    </div>
                   )}
                 </li>
               ))}

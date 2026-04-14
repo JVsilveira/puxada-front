@@ -49,12 +49,15 @@ body {
   align-items: center;
   justify-content: center;
   flex-direction: column;
+  position: relative;
 }
 
 .cadastro > div > button {
+  margin-top: 10px;
+  margin-left: 20px;
   border-radius: 10px;
   width: 100px;
-  height: 30px;
+  height: 40px;
   justify-content: center;
   border: none;
 }
@@ -69,7 +72,17 @@ body {
   font-family: Impact, Haettenschweiler, "Arial Narrow Bold", sans-serif;
   text-shadow: 2px 2px 5px rgb(93, 221, 200);
 }
-
+.cadastro > div > div > ul {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 300px;
+  background: #5ca3a8;
+  color: #000;
+  font-size: 12px;
+  border-radius: 10px;
+  box-shadow: 5px 5px 5px 1px rgba(0, 0, 0, 0.5);
+}
 div > p {
   font-family: Impact, Haettenschweiler, "Arial Narrow Bold", sans-serif;
   text-shadow: 2px 2px 5px rgb(93, 221, 200);
@@ -79,27 +92,76 @@ div > p {
 .jogos {
   display: flex;
   overflow: hidden;
-  overflow-y: scroll;
   margin-bottom: 30px;
 }
 
-.jogos > ul > li {
-  display: flex;
-  justify-content: space-between;
-  margin: 10px;
-  width: 400px;
-  margin-right: 70px;
-  margin-top: 30px;
+.jogos > ul > li > input {
+  border-radius: 10px;
+  width: 250px;
+  height: 30px;
+  text-align: center;
+  margin: 20px;
+  border: none;
 }
-
-.jogos > ul > li > button {
+.btn-save {
   border-radius: 5px;
   border: none;
-  width: 50px;
+  width: 70px;
+  height: 30px;
+  font-size: 12px;
+}
+.btn-save:hover {
+  background-color: #3dad50;
+  cursor: pointer;
 }
 
-.jogos > ul > li > button:hover {
-  background-color: #b33923;
+.jogos > ul > li > input:hover {
+  cursor: pointer;
+}
+.jogos > ul > li > div {
+  display: flex;
+  font-size: 20px;
+  width: 100%;
+  height: 70px;
+  margin-right: 70px;
+  margin-top: 30px;
+  flex-direction: row;
+}
+.jogos > ul {
+  overflow: hidden;
+  overflow-y: scroll;
+}
+
+.jogos > ul > li > div {
+  margin-top: 10px;
+}
+
+.jogos > ul > li > div > div {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  flex: 1;
+  align-items: center;
+  justify-content: center;
+}
+
+.jogos > ul > li > div > div > button {
+  border-radius: 5px;
+  border: none;
+  width: 70px;
+  height: 40px;
+  font-size: 12px;
+  margin: 15px;
+}
+
+.btn-delete:hover {
+  background-color: #b82f10;
+  cursor: pointer;
+}
+
+.btn-update:hover {
+  background-color: #ffcc00;
+  cursor: pointer;
 }
 
 ::-webkit-scrollbar-track {
@@ -115,6 +177,9 @@ div > p {
 }
 
 @media (max-width: 1300px) {
+  .cadastro > div > input:hover {
+    cursor: pointer;
+  }
   .cadastro > div > input {
     width: 200px;
     height: 30px;
@@ -136,5 +201,50 @@ div > p {
   .jogos > ul > li > button {
     width: 50px;
     font-size: 10px;
+  }
+
+  @media (max-width: 1000px) {
+    .cadastro {
+      width: 80dvw;
+      height: 40dvh;
+    }
+    div > p {
+      font-size: 25px;
+    }
+    .cadastro > div > div > ul {
+      width: 150px;
+      font-size: 10px;
+    }
+
+    .cadastro > div > div {
+      margin: 0;
+      padding: 0;
+    }
+
+    .cadastro > div > input:hover {
+      cursor: pointer;
+    }
+    .cadastro > div > input {
+      width: 200px;
+      height: 50px;
+      font-size: 15px;
+    }
+
+    .cadastro > div > button {
+      width: 100px;
+      height: 30px;
+      font-size: 12px;
+    }
+
+    .jogos > ul > li {
+      font-size: 15px;
+      margin: 10px;
+      width: 350px;
+    }
+
+    .jogos > ul > li > button {
+      width: 50px;
+      font-size: 10px;
+    }
   }
 }
