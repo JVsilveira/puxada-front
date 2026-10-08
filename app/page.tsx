@@ -2,14 +2,88 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 
 type Jogo = { id: number; nome: string; categoria: string };
-type Sugestao = { id: number; name: string; genres?: { name: string }[] };
+type Sugestao = {
+  id: number;
+  name: string;
+  background_image?: string | null;
+  genres?: { name: string }[];
+};
 const BASE_URL =
   process.env.NEXT_PUBLIC_API_URL ||
   "https://0r6an9zpbk.execute-api.us-east-2.amazonaws.com";
 const RAWG_KEY =
   process.env.NEXT_PUBLIC_RAWG_API_KEY || "90b96356913142f1b3f4e5acd9a9049d";
+
+const artworkCache = new Map<string, Promise<string | null>>();
+const normalizeName = (name: string) => name.trim().toLocaleLowerCase("pt-BR");
+
+function findArtwork(name: string) {
+  const key = normalizeName(name);
+  const cached = artworkCache.get(key);
+  if (cached) return cached;
+  const request = fetch(
+    `https://api.rawg.io/api/games?key=${RAWG_KEY}&search=${encodeURIComponent(name)}&page_size=5`,
+    { signal: AbortSignal.timeout(10000) },
+  )
+    .then(async (response) => {
+      if (!response.ok) throw new Error("Artwork unavailable");
+      const data: { results?: Sugestao[] } = await response.json();
+      return (
+        data.results?.find((game) => normalizeName(game.name) === key)
+          ?.background_image || null
+      );
+    })
+    .catch(() => {
+      artworkCache.delete(key);
+      return null;
+    });
+  artworkCache.set(key, request);
+  return request;
+}
+
+function GameArtwork({
+  name,
+  source,
+  lookup = false,
+}: {
+  name: string;
+  source?: string | null;
+  lookup?: boolean;
+}) {
+  const [resolved, setResolved] = useState<{
+    name: string;
+    url: string | null;
+  } | null>(null);
+  const [failedSource, setFailedSource] = useState<string | null>(null);
+  useEffect(() => {
+    if (!lookup) return;
+    let active = true;
+    void findArtwork(name).then((url) => {
+      if (active) setResolved({ name, url });
+    });
+    return () => {
+      active = false;
+    };
+  }, [name, lookup]);
+  const url = source || (resolved?.name === name ? resolved.url : null);
+  return url && url !== failedSource ? (
+    <Image
+      src={url}
+      alt=""
+      width={116}
+      height={124}
+      unoptimized
+      loading="lazy"
+      className="game-artwork"
+      onError={() => setFailedSource(url)}
+    />
+  ) : (
+    <GameIcon />
+  );
+}
 
 function GameIcon({ small = false }: { small?: boolean }) {
   return (
@@ -116,13 +190,25 @@ function GameFields({
                 <button
                   type="button"
                   onClick={() => {
+                    artworkCache.set(
+                      normalizeName(game.name),
+                      Promise.resolve(game.background_image || null),
+                    );
                     onName(game.name);
                     onCategory(game.genres?.[0]?.name || "Outros");
                     setOpen(false);
                   }}
                 >
-                  <span>{game.name}</span>
-                  <small>{game.genres?.[0]?.name || "Outros"}</small>
+                  <span className="suggestion-artwork">
+                    <GameArtwork
+                      name={game.name}
+                      source={game.background_image}
+                    />
+                  </span>
+                  <span className="suggestion-info">
+                    <span>{game.name}</span>
+                    <small>{game.genres?.[0]?.name || "Outros"}</small>
+                  </span>
                 </button>
               </li>
             ))}
@@ -421,7 +507,7 @@ export default function Home() {
                     ) : (
                       <>
                         <span className="game-tile">
-                          <GameIcon />
+                          <GameArtwork name={game.nome} lookup />
                         </span>
                         <div className="game-info">
                           <h3>{game.nome}</h3>

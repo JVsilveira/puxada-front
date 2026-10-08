@@ -566,3 +566,38 @@ h2 {
     scroll-behavior: auto !important;
   }
 }
+
+.game-tile {
+  overflow: hidden;
+}
+.game-artwork {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.suggestions button {
+  flex-direction: row;
+  align-items: center;
+  gap: 10px;
+}
+.suggestion-artwork {
+  flex: 0 0 42px;
+  height: 46px;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  border-radius: 5px;
+  background: #e6efef;
+  color: var(--teal);
+}
+.suggestion-artwork svg {
+  width: 24px;
+  height: 24px;
+}
+.suggestion-info {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  min-width: 0;
+}
